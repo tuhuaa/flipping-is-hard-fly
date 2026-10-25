@@ -7,6 +7,7 @@
 
 > 游戏：Steam 正式版 *Flipping is Hard*（appid 3826670，Unity 6000.0.66f1 / IL2CPP / win-x64）
 > 框架：BepInEx 6.0.0-be.791（IL2CPP）
+> 配套 mod：[FlippingParty](https://github.com/tuhuaa/flipping-is-hard-party)（把队友传送到身边）
 
 ---
 
