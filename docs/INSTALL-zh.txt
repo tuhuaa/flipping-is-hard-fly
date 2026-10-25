@@ -1,0 +1,147 @@
+﻿========================================================================
+ FlippingFly v1.1.0 (Full Edition)  —  《Flipping is Hard》飞天 Mod
+ 适用：Steam 正式版 Flipping is Hard（Unity 6 / IL2CPP，appid 3826670）
+ 特点：已内置 BepInEx 6 IL2CPP + 预生成的互操作程序集，解压即用
+========================================================================
+
+【一、安装：只需要解压一次】
+
+1. 完全退出游戏（Steam 里显示"停止"才算关掉）。
+
+2. 把本压缩包里的**所有文件**解压到下面这个目录（直接解压，不要套一层新文件夹）：
+
+      D:\SteamLibrary\steamapps\common\Flipping is Hard
+
+   如果游戏装在别处，就解压到你自己的那个
+   ...\steamapps\common\Flipping is Hard 目录。
+   判断标准：解压后目录里必须能看到 Flipping is Hard.exe 和本说明文件并排。
+
+3. 解压完成后的目录应该长这样：
+
+      Flipping is Hard.exe          <- 游戏本体（原有，别动）
+      Flipping is Hard_Data\        <- 原有，别动
+      GameAssembly.dll              <- 原有，别动
+      UnityPlayer.dll               <- 原有，别动
+      winhttp.dll                   <- 新增（注入器）
+      doorstop_config.ini           <- 新增
+      .doorstop_version             <- 新增
+      dotnet\                       <- 新增（.NET 6 运行时）
+      BepInEx\                      <- 新增（框架 + mod + 预生成缓存）
+        core\  plugins\  config\  interop\  unity-libs\
+      FlippingFly_安装说明.txt       <- 本文件
+
+4. 从 Steam 正常启动游戏即可。因为已经内置了预生成的 IL2CPP 互操作程序集，
+   **首次启动不需要等反编译**（正常几秒到十几秒进主菜单）。
+
+   * 如果第一次启动仍然卡住 1~5 分钟：说明你的游戏版本和本包不完全一致，
+     BepInEx 正在自己重新生成一遍。耐心等完这一次，之后都是秒开。
+
+----------------------------------------------------------------------
+ 如果游戏目录里已经有旧东西
+----------------------------------------------------------------------
+- 已经装过别的 BepInEx：先把旧的 BepInEx 文件夹改名成 BepInEx_old、旧的
+  winhttp.dll / doorstop_config.ini 也备份走，再解压本包，否则版本会打架。
+- 只装过本 mod 的旧版本：直接用本包覆盖即可。
+
+========================================================================
+【二、使用：进关卡后看左上角】
+========================================================================
+
+进关卡（不是主菜单）后，屏幕左上角出现半透明面板：
+
+  FlippingFly v1.1.0   fly mod ready
+  F native fly : off  [FlyCheat OK]  spd 18/54
+  G manual fly : off  spd 18 x3
+  WASD move / E up / Q down / Shift boost
+  last key: -      H hud / [ ] speed
+  cfg: BepInEx\config\cyb.flippingishard.fly.cfg
+
+按键：
+
+  F      原生飞行 开/关   ← 推荐，联机同步正常
+  G      手动飞行 开/关   ← 穿墙，单人用；联机会被服务器拉回
+  H      显示 / 隐藏面板
+  [ ]    实时调速度（±2，自动写回 cfg，不用重启）
+
+飞行中操作（两种模式通用）：
+
+  W A S D   前后左右（按镜头朝向）
+  E         上升        Q  下降
+  Shift     加速（默认 3 倍）
+  鼠标      转视角
+
+怎么确认按键生效（自带文字验证）：
+  - 按任意功能键，"last key" 那一行会变黄并显示你按了什么键
+  - 屏幕中间会闪一行大字：NATIVE FLY ON / MANUAL FLY ON / speed 24 …
+  - 括号里 FlyCheat OK = 找到了游戏自带的飞行组件；
+    FlyCheat none = 当前场景还没有玩家对象，按 F 会自动切到手动模式
+
+========================================================================
+【三、调节速度】
+========================================================================
+
+方式 1（不用重启）：游戏里按 ] 加速、[ 减速。
+        原生模式开着就调原生速度，否则调手动速度，数值立即写进 cfg。
+
+方式 2（改配置文件，重启生效）：
+        文件：BepInEx\config\cyb.flippingishard.fly.cfg（记事本打开）
+
+  [HUD]
+  ShowHud = true               ; 是否显示左上角面板
+
+  [Speed]
+  NativeFlySpeed = 0           ; 原生飞行速度；0 = 保持游戏原值
+                               ; 觉得慢填 30 / 50 / 80（原速大致在 18 上下）
+  NativeSuperFlySpeed = 0      ; 按住 Shift 时的速度；0 = 不改
+  NativeSpeedMultiplier = 0    ; 额外倍数；0 = 不改，填 2 = 再快一倍
+  PositionSmoothing = 0        ; 位置平滑；联机瞬移/抖动就填 0.1 ~ 0.3，0 = 不改
+  ManualFlySpeed = 18          ; 手动飞行速度（G 模式）
+  ManualBoostMultiplier = 3    ; 手动飞行 Shift 倍率
+
+  规则：所有 0 都表示"不覆盖游戏原值"，只有填正数才生效。
+        建议先按 [ ] 在游戏里试出舒服的数值，再抄进 cfg 固定。
+
+========================================================================
+【四、排错】
+========================================================================
+
+1) 左上角没有面板
+   - 打开 BepInEx\LogOutput.log，搜 "Loading [FlippingFly"：
+       有   -> 插件加载成功，但界面没画出来，把 log 发我
+       没有 -> 解压位置不对（BepInEx 没和 exe 同层），或 winhttp.dll 丢失
+   - 必须从 Steam 启动；某些第三方启动器会替换 winhttp.dll 导致失效
+
+2) 面板显示 FlyCheat none
+   - 还没进关卡 / 玩家对象没生成，等 1~2 秒会自动重试
+   - 按 F 会自动退到手动模式（G），单人照样能飞
+
+3) 按 F 有字但手机不动，按 G 能动
+   - 该版本原生飞行的输入被裁掉了，用 G 手动模式即可（联机不同步）
+
+4) 游戏更新后启动黑屏 / 报错
+   - 删除 BepInEx\interop\ 和 BepInEx\unity-libs\，再启动一次让它重新生成
+     （会重新卡几分钟，属正常）
+
+5) 彻底卸载
+   - 删除：winhttp.dll、doorstop_config.ini、.doorstop_version、dotnet\、
+           BepInEx\、本说明文件
+   - 游戏本体文件没被改动；不放心可以 Steam 验证文件完整性
+
+========================================================================
+【五、说明】
+========================================================================
+
+- 纯内存修改，不改游戏文件，无破解、无网络流量劫持、无遥测。
+- 游戏没有 VAC / EAC，本 mod 不涉及封号检测；但联机请只在自己或朋友的
+  房间里用，别去公开房影响别人。
+- 原生飞行（F）走游戏自带的 EHS.FlyCheat，带位置平滑，房主/客户端都能
+  看到你在飞；手动飞行（G）直接写坐标，联机会回弹。
+
+技术信息：
+- BepInEx 6.0.0-be.791 (Unity IL2CPP, win-x64)
+- 插件：FlippingFly.dll，GUID cyb.flippingishard.fly，net6.0
+- 调用：EHS.FlyCheat.SetExternalFlyEnabled(bool)，并覆写 flySpeed /
+        superFlySpeed / flySpeedMultiplier / targetPositionSmoothingDuration
+- 日志：BepInEx\LogOutput.log
+
+========================================================================

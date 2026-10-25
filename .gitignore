@@ -1,0 +1,22 @@
+# build output
+bin/
+obj/
+*.user
+
+# local game / reference assemblies (never commit these)
+BepInEx/
+interop/
+unity-libs/
+dotnet/
+*.dll
+!src/**/*.cs
+
+# release artifacts (upload to GitHub Releases instead)
+release/
+*.zip
+
+# misc
+.vs/
+.idea/
+Thumbs.db
+desktop.ini
